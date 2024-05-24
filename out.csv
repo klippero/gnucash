@@ -1,0 +1,15 @@
+date;amount;description;account
+18/02/2010;-450,00;##SCO;Opening Balance
+08/02/2021;-8460,00;##SCO Compra a eCliente;Opening Balance
+05/08/2020;974,22;##SCO SocialCo;a1) Activos:1. Efectivo:ING nómina
+28/07/2021;11063,09;##SCO SocialCo;a1) Activos:1. Efectivo:ING nómina
+13/09/2021;-5531,55;##SCO SocialCo;a1) Activos:1. Efectivo:ING nómina
+07/02/2023;4330,52;##SCO SocialCo;a1) Activos:1. Efectivo:ING nómina
+20/12/2023;1920,66;##SCO SocialCo;a1) Activos:1. Efectivo:ING nómina
+18/02/2010;45,00;##SCO;a1) Activos:3. Empresas:#SCO SocialCo
+08/02/2021;47,00;##SCO Compra a eCliente;a1) Activos:3. Empresas:#SCO SocialCo
+05/08/2020;-974,22;##SCO SocialCo;b1) Ingresos:SCO
+28/07/2021;-11063,09;##SCO SocialCo;b1) Ingresos:SCO
+13/09/2021;5531,55;##SCO SocialCo;b1) Ingresos:SCO
+07/02/2023;-4330,52;##SCO SocialCo;b1) Ingresos:SCO
+20/12/2023;-1920,66;##SCO SocialCo;b1) Ingresos:SCO
