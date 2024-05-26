@@ -1,4 +1,18 @@
 require "gnucash"
+require 'date'
+
+
+sec2include = ["#SCO","USA","AS&P","dbM","ECL"]
+# sec2include = ["USA"]
+
+
+securities = {
+    "#SCO" => { :val => 460.1877076 },
+    "ECL"  => { :val =>  97.67671096 },
+    "dbM"  => { :val =>  12.01 },
+    "USA"  => { :val =>  53.29 },
+    "AS&P" => { :val => 417.94 }
+}
 
 
 def contains(string,array)
@@ -23,17 +37,16 @@ book = Gnucash.open("/Users/santiagoalvarezrojo/Library/CloudStorage/GoogleDrive
 
 puts "fecha;fondo;#;€;inversión"
 
-# securities = ["#SCO","USA","AS&P","dbM","ECL"]
-securities = ["SCO"]
-
 book.accounts.each do |account|
-    sec = contains(account.full_name,securities)
+    sec = contains(account.full_name,sec2include)
     if sec != "" && !["EXPENSE","INCOME"].include?(account.type)
+        securities[sec][:amount] = 0
         account.transactions.each do |tx|
             shares = value = 0
             tx.splits.each do |split|
                 if split[:account].full_name.include?(sec)
                     shares = split[:value].to_f
+                    securities[sec][:amount] += shares
                 else
                     value = split[:value].to_f
                 end
@@ -47,10 +60,17 @@ end
 book.accounts.each do |account|
     if ["EXPENSE","INCOME"].include?(account.type)
         account.transactions.each do |tx|
-            sec = contains(tx.description,securities)
+            sec = contains(tx.description,sec2include)
             if sec != ""
                 puts "#{tx.date.strftime("%d/%m/%Y")};#{sec};;;#{(tx.value.to_f * -1).to_s.gsub(".",",")};#{tx.description};#{account.full_name}"
             end
         end
     end
+end
+
+sec2include.each do |sec|
+    shares = securities[sec][:amount]
+    vl = securities[sec][:val]
+    total = shares * vl
+    puts "#{Date.today.strftime("%d/%m/%Y")};#{sec};#{shares.to_s.gsub(".",",")};#{vl.to_s.gsub(".",",")};#{total.to_s.gsub(".",",")}"
 end
