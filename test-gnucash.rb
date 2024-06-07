@@ -2,8 +2,10 @@ require "gnucash"
 require 'date'
 
 
-sec2include = ["#SCO","USA","AS&P","dbM","ECL"]
-# sec2include = ["USA"]
+sec2include = ["#SCO","USA","AS&P","dbM","ECL","ING 2030","dbW"]
+sec2include = ["dbW"]
+sec2include = ["#SCO"]
+sec2include = ["MSCI"]
 
 
 securities = {
@@ -11,7 +13,12 @@ securities = {
     "ECL"  => { :val =>  97.67671096 },
     "dbM"  => { :val =>  12.01 },
     "USA"  => { :val =>  53.29 },
-    "AS&P" => { :val => 417.94 }
+    "AS&P" => { :val => 417.94 },
+    "ING 2030" => { :val => 0 },
+    "dbW" => { :val => 0 },
+    "VSP" => { :val => 0 },
+    "ASP" => { :val => 417.62 },
+    "MSCI" => { :val => 309.26 },
 }
 
 
@@ -34,6 +41,7 @@ def contains(string,array)
 end
 
 book = Gnucash.open("/Users/santiagoalvarezrojo/Library/CloudStorage/GoogleDrive-santiago@ecliente.com/Mi\ unidad/gnucash/personal.gnucash")
+book = Gnucash.open("/Users/santiagoalvarezrojo/Library/CloudStorage/GoogleDrive-santiago@ecliente.com/Mi\ unidad/gnucash/family.gnucash")
 
 puts "fecha;fondo;#;€;inversión"
 
