@@ -81,8 +81,7 @@ class Transaction
         else
             result = :dividendos
         end
-        return result
-    end
+        @shares && @shares > 0 ? :equity : :dividendos
 end
 
 
