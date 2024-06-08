@@ -1,16 +1,55 @@
+GIT
+  remote: https://github.com/djromero/xirr.git
+  revision: 96c60ceb6cbde791f3b9ba95073e9bb8b7ead895
+  specs:
+    xirr (0.7.1)
+      activesupport (= 7.1.3.2)
+
 GEM
   remote: https://rubygems.org/
   specs:
+    activesupport (7.1.3.2)
+      base64
+      bigdecimal
+      concurrent-ruby (~> 1.0, >= 1.0.2)
+      connection_pool (>= 2.2.5)
+      drb
+      i18n (>= 1.6, < 2)
+      minitest (>= 5.1)
+      mutex_m
+      tzinfo (~> 2.0)
+    base64 (0.2.0)
+    bigdecimal (3.1.8)
+    concurrent-ruby (1.3.2)
+    connection_pool (2.4.1)
     date (3.3.4)
+    drb (2.2.1)
+    gnucash (1.5.0)
+      nokogiri
+    i18n (1.14.5)
+      concurrent-ruby (~> 1.0)
+    mini_portile2 (2.8.7)
     minitest (5.23.1)
+    mutex_m (0.2.0)
+    nokogiri (1.16.5)
+      mini_portile2 (~> 2.8.2)
+      racc (~> 1.4)
+    nokogiri (1.16.5-arm64-darwin)
+      racc (~> 1.4)
+    racc (1.8.0)
+    tzinfo (2.0.6)
+      concurrent-ruby (~> 1.0)
 
 PLATFORMS
   arm64-darwin-21
   ruby
 
 DEPENDENCIES
+  activesupport
   date
+  gnucash
   minitest
+  xirr (= 0.7.1)!
 
 BUNDLED WITH
    2.5.5

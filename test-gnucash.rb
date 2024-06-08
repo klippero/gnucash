@@ -9,16 +9,16 @@ sec2include = ["MSCI"]
 
 
 securities = {
-    "#SCO" => { :val => 460.1877076 },
-    "ECL"  => { :val =>  97.67671096 },
-    "dbM"  => { :val =>  12.01 },
-    "USA"  => { :val =>  53.29 },
-    "AS&P" => { :val => 417.94 },
-    "ING 2030" => { :val => 0 },
-    "dbW" => { :val => 0 },
-    "VSP" => { :val => 0 },
-    "ASP" => { :val => 417.62 },
-    "MSCI" => { :val => 309.26 },
+    "#SCO" => { :vl => 460.1877076 },
+    "ECL"  => { :vl =>  97.67671096 },
+    "dbM"  => { :vl =>  12.01 },
+    "USA"  => { :vl =>  53.29 },
+    "AS&P" => { :vl => 417.94 },
+    "ING 2030" => { :vl => 0 },
+    "dbW" => { :vl => 0 },
+    "VSP" => { :vl => 0 },
+    "ASP" => { :vl => 417.62 },
+    "MSCI" => { :vl => 309.26 },
 }
 
 
@@ -78,7 +78,7 @@ end
 
 sec2include.each do |sec|
     shares = securities[sec][:amount]
-    vl = securities[sec][:val]
+    vl = securities[sec][:vl]
     total = shares * vl
     puts "#{Date.today.strftime("%d/%m/%Y")};#{sec};#{shares.to_s.gsub(".",",")};#{vl.to_s.gsub(".",",")};#{total.to_s.gsub(".",",")}"
 end
