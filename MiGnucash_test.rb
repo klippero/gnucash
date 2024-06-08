@@ -2,7 +2,8 @@ require "minitest/autorun"
 require_relative "MiGnucash"
 require 'date'
 require "gnucash"
-
+require("bundler/setup")
+require "xirr"
 
 
 class TransactionTest < Minitest::Test
