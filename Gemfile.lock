@@ -1,0 +1,16 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    date (3.3.4)
+    minitest (5.23.1)
+
+PLATFORMS
+  arm64-darwin-21
+  ruby
+
+DEPENDENCIES
+  date
+  minitest
+
+BUNDLED WITH
+   2.5.5

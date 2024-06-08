@@ -1,4 +1,4 @@
-require "gnucash"
+# require "gnucash"
 
 
 spec = {
@@ -27,8 +27,12 @@ spec = {
                 :isin => 'LU0996179007',
                 :val => 417.94
             },
-            "#SCO" => { :val => 460.1877076 },
-            "ECL"  => { :val =>  97.67671096 },
+            "#SCO" => {
+                :val => 460.1877076
+            },
+            "ECL"  => {
+                :val =>  97.67671096
+            },
         }
     },
     :familiar => {
@@ -52,17 +56,47 @@ spec = {
 
 
 class Transaction
-    def initialize(sec,date,amount,*shares)
+    def initialize(date,sec,amount,*shares)
         @security = sec
-        @date = fecha
+        @date = date
         @amount = amount
         if shares.length == 1
             @shares = shares[0]
+            @price = - @amount / @shares
         end
     end
 
     def to_s
-        return "#{@date.strftime("%d/%m/%Y")};#{@sec};#{@shares.to_s.gsub(".",",")};#{price.to_s.gsub(".",",")};#{value.to_s.gsub(".",",")}"
+        if @shares
+            sh = "#{@shares.to_s.gsub(".",",")};#{@price.to_s.gsub(".",",")}"
+        else
+            sh = ";"
+        end
+        return "#{@date.strftime("%d/%m/%Y")};#{@security};#{sh};#{@amount.to_s.gsub(".",",")}"
+    end
+
+    def type
+        if @shares && @shares > 0
+            result = :equity
+        else
+            result = :dividendos
+        end
+        return result
+    end
+end
+
+
+class Investment
+    def initialize(id,isin,vl)
+       @id = id
+       @isin = isin
+       @vl = vl
+       @tr_equity = []
+       @tr_dividendos = []
+    end
+
+    def << ( tr )
+
     end
 end
 
@@ -73,7 +107,3 @@ class MiGnucash
         a = 1
     end
 end
-
-
-mic = MiGnucash.new(spec[:personal])
-puts 1
