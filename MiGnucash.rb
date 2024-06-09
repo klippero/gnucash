@@ -1,3 +1,7 @@
+require("bundler/setup")
+require "xirr"
+require "active_support/all" # for `in_groups_of`
+
 class Transaction_
     def initialize(date,investment,amount,*shares)
         @investment = investment
@@ -33,12 +37,14 @@ end
 
 
 class Investment
+    include Xirr # bring `Xirr` module in scope
     def initialize(id,desc,vl)
        @id = id
        @desc = desc
        @vl = vl
        @transactions = []
        @amount = 0
+       @tmp = xirr # force using xirr
     end
 
     def << ( transaction )
