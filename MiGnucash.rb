@@ -13,6 +13,10 @@ class Transaction_
         end
     end
 
+    def to_xirrTransaction
+        return Xirr::Transaction.new(@amount,date: @date)
+    end
+
     def to_csv
         if @shares
             sh = "#{@shares.to_s.gsub(".",",")};#{@price.to_s.gsub(".",",")}"
@@ -45,7 +49,6 @@ class Investment
        @vl = vl
        @transactions = []
        @amount = 0
-       @tmp = xirr # force using xirr
     end
 
     def << ( transaction )
@@ -69,15 +72,11 @@ class Investment
 
     def xirr
         cf = Cashflow.new
-        [
-            -10000, "1-Jan-08",
-              2750, "1-Mar-08",
-              4250, "30-Oct-08",
-              3250, "15-Feb-09",
-              2750, "1-Apr-09"
-        ].in_groups_of(2) do |amount, date|
-            cf << Transaction.new(amount, date: date.to_date)
+        @transactions.each do |transaction|
+            cf << transaction.to_xirrTransaction
         end
+        cf << Transaction.new(@amount * @vl,date:Date.today)
+        return cf.xirr.to_f
     end
 end
 
@@ -118,8 +117,6 @@ class Portfolio
                 end
             end
         end
-
-        @portfolio["VSP500"].xirr
     end
 
 
@@ -139,6 +136,11 @@ class Portfolio
             result += investment.to_csv
         end
         return result
+    end
+
+
+    def xirr
+        return @portfolio["VSP500"].xirr
     end
 
 

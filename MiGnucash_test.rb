@@ -53,4 +53,19 @@ class TransactionTest < Minitest::Test
         )
         assert_equal(309,portfolio.to_csv.length)
     end
+
+    def test_xirr
+        portfolio = Portfolio.new(
+            {
+                :file => 'test.gnucash',
+                :investments =>
+                {
+                    "VSP500" => {
+                        :vl => 58.13
+                    }
+                }
+            }
+        )
+        assert_equal(13.5,(portfolio.xirr * 100).round(2))
+    end
 end
