@@ -38,6 +38,7 @@ end
 
 class Investment
     include Xirr # bring `Xirr` module in scope
+
     def initialize(id,desc,vl)
        @id = id
        @desc = desc
@@ -117,6 +118,8 @@ class Portfolio
                 end
             end
         end
+
+        @portfolio["VSP500"].xirr
     end
 
 
