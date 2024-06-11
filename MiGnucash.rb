@@ -50,7 +50,7 @@ end
 class Investment
     include Xirr # bring `Xirr` module in scope
 
-    VL = {
+    Price = {
         "Apple" =>
         {
             Date.strptime("11/06/2024","%d/%m/%Y") => 202.73,
@@ -58,24 +58,20 @@ class Investment
         "VSP500" =>
         {
             Date.strptime("11/06/2024","%d/%m/%Y") => 428.08,
-        }
+        },
+        "Amundi S&P 500 AS&P" =>
+        {
+            Date.strptime("11/06/2024","%d/%m/%Y") => 428.08,
+        },
     }
 
     def initialize(name)
        @name = name
        @transactions = []
-       @amount = 0
     end
 
     def << ( transaction )
         @transactions << transaction
-        if transaction.equity?
-            @amount += transaction.shares
-        end
-    end
-
-    def amount
-        return @amount
     end
 
     def to_csv
@@ -93,17 +89,35 @@ class Investment
                 cf << transaction.to_xirrTransaction
             end
         end
-        cf << Transaction.new(@amount * vl(date),date:date)
+        cf << Transaction.new(amount(date) * price(date),date:date)
         return cf.xirr.to_f
     end
 
-    def vl(date=Date.today)
-        return VL[@name][date]
+    def price(date=Date.today)
+#        if Price.haskey?(@name) && Price[@name].haskey?(date)
+            return Price[@name][date]
+#        else
+#            return 0
+#        end
+    end
+
+    def value(date=Date.today)
+        return amount(date) * price(date)
+    end
+
+    def amount(date=Date.today)
+        result = 0
+        @transactions.each do |transaction|
+            if transaction.date <= date && transaction.equity?
+                result += transaction.shares
+            end
+        end
+        return result
     end
 
     def profit(date=Date.today)
         result = aportaciones_netas(date)
-        result += @amount * vl(date)
+        result += amount(date) * price(date)
         return result
     end
 
@@ -118,15 +132,11 @@ class Investment
     end
 
     def report_txt(date=Date.today)
-        result = ""
-        result << "=== #{@name} ======\n"
-        result << "#{@amount} x #{vl(date)} = #{@amount * vl(date)}\n"
-        result << "rent. anualizada: #{'%.2f' % ( xirr(date) * 100) }%\n"
-        result << "beneficio: #{'%.2f' % ( profit(date) ) }\n"
-        result << "aportaciones netas: #{'%.2f' % ( aportaciones_netas(date) ) }\n"
-        result << "ratio: #{'%.2f' % ( (@amount * vl(date) ) / aportaciones_netas(date) ) }x\n"
-        result << "====================\n"
-        return result
+        "#{value(date).round(2)}€ (#{amount(date).round(2)} #{@name} x #{price(date).round(2)}€) #{(xirr(date) * 100).round(2) }% #{profit(date).round(2)}€"
+    end
+
+    def transactions
+        return @transactions
     end
 end
 
@@ -167,6 +177,14 @@ class Portfolio
         end
     end
 
+    def report_txt(date=Date.today)
+        result = ""
+        @portfolio.each do |investment_str,investment|
+            result << investment.report_txt(date) << "\n"
+        end
+        result << "#{value(date).round(2)} #{(xirr(date) * 100).round(2) }% #{profit(date).round(2)}"
+        return result
+    end
 
     def amount(investment)
         if @portfolio[investment]
@@ -187,8 +205,17 @@ class Portfolio
     end
 
 
-    def xirr
-        return @portfolio["VSP500"].xirr
+    def xirr(date=Date.today)
+        cf = Xirr::Cashflow.new
+        @portfolio.each do |investment_str,investment|
+            investment.transactions.each do |transaction|
+                if transaction.date <= date
+                    cf << transaction.to_xirrTransaction
+                end
+            end
+            cf << Xirr::Transaction.new(investment.amount(date) * investment.price(date),date:date)
+        end
+        return cf.xirr.to_f
     end
 
 
@@ -212,5 +239,21 @@ class Portfolio
 
     def portfolio
         return @portfolio
+    end
+
+    def value(date=Date.today)
+        result = 0
+        @portfolio.each do |investment_str,investment|
+            result += investment.value(date)
+        end
+        return result
+    end
+
+    def profit(date=Date.today)
+        result = 0
+        @portfolio.each do |investment_str,investment|
+            result += investment.profit(date)
+        end
+        return result
     end
 end
