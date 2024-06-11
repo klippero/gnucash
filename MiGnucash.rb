@@ -88,6 +88,7 @@ class Portfolio
         # equity
         book = Gnucash.open(spec[:file])
         book.accounts.each do |account|
+            puts puts account.full_name + ">> " + account.type
             investment = contains(account.full_name,spec[:investments].keys)
             if investment != "" && !["EXPENSE","INCOME"].include?(account.type)
                 @portfolio[investment] = Investment.new(investment,account.description,spec[:investments][investment][:vl])

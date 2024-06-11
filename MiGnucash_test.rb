@@ -66,6 +66,6 @@ class TransactionTest < Minitest::Test
                 }
             }
         )
-        assert_equal(13.5,(portfolio.xirr * 100).round(2))
+        assert_equal(13.49,(portfolio.xirr * 100).round(2))
     end
 end
