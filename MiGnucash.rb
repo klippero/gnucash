@@ -3,8 +3,7 @@ require "xirr"
 require "active_support/all" # for `in_groups_of`
 
 class Transaction_
-    def initialize(date,investment,amount,*shares)
-        @investment = investment
+    def initialize(date,amount,*shares)
         @date = date
         @amount = amount
         if shares.length == 1
@@ -17,13 +16,13 @@ class Transaction_
         return Xirr::Transaction.new(@amount,date: @date)
     end
 
-    def to_csv
+    def to_csv(investment)
         if @shares
             sh = "#{@shares.to_s.gsub(".",",")};#{@price.to_s.gsub(".",",")}"
         else
             sh = ";"
         end
-        return "#{@date.strftime("%d/%m/%Y")};#{@investment};#{sh};#{@amount.to_s.gsub(".",",")}"
+        return "#{@date.strftime("%d/%m/%Y")};#{investment};#{sh};#{@amount.to_s.gsub(".",",")}"
     end
 
     def type
@@ -37,16 +36,33 @@ class Transaction_
     def shares
         return @shares
     end
+
+    def amount
+        return @amount
+    end
+
+    def date
+        return @date
+    end
 end
 
 
 class Investment
     include Xirr # bring `Xirr` module in scope
 
-    def initialize(id,desc,vl)
-       @id = id
-       @desc = desc
-       @vl = vl
+    VL = {
+        "Apple" =>
+        {
+            Date.strptime("11/06/2024","%d/%m/%Y") => 202.73,
+        },
+        "VSP500" =>
+        {
+            Date.strptime("11/06/2024","%d/%m/%Y") => 428.08,
+        }
+    }
+
+    def initialize(name)
+       @name = name
        @transactions = []
        @amount = 0
     end
@@ -65,44 +81,75 @@ class Investment
     def to_csv
         result = ""
         @transactions.each do |transaction|
-            result += transaction.to_csv + "\n"
+            result += transaction.to_csv(@name) + "\n"
         end
         return result
     end
 
-    def xirr
+    def xirr(date=Date.today)
         cf = Cashflow.new
         @transactions.each do |transaction|
-            cf << transaction.to_xirrTransaction
+            if transaction.date <= date
+                cf << transaction.to_xirrTransaction
+            end
         end
-        cf << Transaction.new(@amount * @vl,date:Date.today)
+        cf << Transaction.new(@amount * vl(date),date:date)
         return cf.xirr.to_f
+    end
+
+    def vl(date=Date.today)
+        return VL[@name][date]
+    end
+
+    def profit(date=Date.today)
+        result = aportaciones_netas(date)
+        result += @amount * vl(date)
+        return result
+    end
+
+    def aportaciones_netas(date=Date.today)
+        result = 0
+        @transactions.each do |transaction|
+            if transaction.date <= date
+                result += transaction.amount
+            end
+        end
+        return result
+    end
+
+    def report_txt(date=Date.today)
+        result = ""
+        result << "=== #{@name} ======\n"
+        result << "#{@amount} x #{vl(date)} = #{@amount * vl(date)}\n"
+        result << "rent. anualizada: #{'%.2f' % ( xirr(date) * 100) }%\n"
+        result << "beneficio: #{'%.2f' % ( profit(date) ) }\n"
+        result << "aportaciones netas: #{'%.2f' % ( aportaciones_netas(date) ) }\n"
+        result << "ratio: #{'%.2f' % ( (@amount * vl(date) ) / aportaciones_netas(date) ) }x\n"
+        result << "====================\n"
+        return result
     end
 end
 
 
 class Portfolio
-    def initialize(spec)
+    def initialize(filename)
         @portfolio = {}
 
         # equity
-        book = Gnucash.open(spec[:file])
+        book = Gnucash.open(filename)
         book.accounts.each do |account|
-            puts puts account.full_name + ">> " + account.type
-            investment = contains(account.full_name,spec[:investments].keys)
-            if investment != "" && !["EXPENSE","INCOME"].include?(account.type)
-                @portfolio[investment] = Investment.new(investment,account.description,spec[:investments][investment][:vl])
-
+            if ["MUTUAL","STOCK"].include?(account.type)
+                @portfolio[account.name] = Investment.new(account.name)
                 account.transactions.each do |tx|
-                    shares = value = 0
+                    shares = amount = 0
                     tx.splits.each do |split|
-                        if split[:account].full_name.include?(investment)
+                        if split[:account].full_name.include?(account.name)
                             shares = split[:value].to_f
                         else
-                            value = split[:value].to_f
+                            amount = split[:value].to_f
                         end
                     end
-                    @portfolio[investment] << Transaction_.new(tx.date,investment,value,shares)
+                    @portfolio[account.name] << Transaction_.new(tx.date,amount,shares)
                 end
             end
         end
@@ -111,9 +158,9 @@ class Portfolio
         book.accounts.each do |account|
             if ["EXPENSE","INCOME"].include?(account.type)
                 account.transactions.each do |tx|
-                    investment = contains(tx.description,spec[:investments].keys)
+                    investment = contains(tx.description,@portfolio.keys)
                     if investment != ""
-                        @portfolio[investment] << Transaction_.new(tx.date,investment,tx.value.to_f)
+                        @portfolio[investment] << Transaction_.new(tx.date,-1 * tx.value.to_f)
                     end
                 end
             end
@@ -161,5 +208,9 @@ class Portfolio
             result = ""
         end
         return result
+    end
+
+    def portfolio
+        return @portfolio
     end
 end

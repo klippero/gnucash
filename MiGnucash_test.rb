@@ -6,66 +6,57 @@ require "gnucash"
 
 class TransactionTest < Minitest::Test
     def test_initialize_equity
-        t = Transaction_.new(Date.parse('2010-02-18'),"VSP500",-450,45)
-        assert_equal(t.to_csv,"18/02/2010;VSP500;45;10;-450")
+        t = Transaction_.new(Date.parse('2010-02-18'),-450,45)
+        assert_equal(t.to_csv("MSFT"),"18/02/2010;MSFT;45;10;-450")
     end
 
     def test_initialize_dividendos
-        t = Transaction_.new(Date.strptime("05/08/2020","%d/%m/%Y"),"VSP500",974.22)
-        assert_equal(t.to_csv,"05/08/2020;VSP500;;;974,22")
+        t = Transaction_.new(Date.strptime("05/08/2020","%d/%m/%Y"),974.22)
+        assert_equal(t.to_csv("MSFT"),"05/08/2020;MSFT;;;974,22")
     end
 
     def test_tr_type
-        t = Transaction_.new(Date.parse('2010-02-18'),"VSP500",-450,45)
+        t = Transaction_.new(Date.parse('2010-02-18'),-450,45)
         assert_equal(t.type,:equity)
 
-        t = Transaction_.new(Date.strptime("05/08/2020","%d/%m/%Y"),"VSP500",974.22)
+        t = Transaction_.new(Date.strptime("05/08/2020","%d/%m/%Y"),974.22)
         assert_equal(t.type,:dividendos)
     end
 
-    def test_total
-        portfolio = Portfolio.new(
-            {
-                :file => 'test.gnucash',
-                :investments =>
-                {
-                    "VSP500" => {
-                        :vl => 58.13
-                    }
-                }
-            }
-        )
+    def test_amount
+        portfolio = Portfolio.new('test.gnucash')
         assert_equal(748.07,portfolio.amount("VSP500").round(2))
+        assert_equal(6720.05,portfolio.amount("Apple").round(2))
         assert_equal(0,portfolio.amount("woei").round(2))
     end
 
     def test_csv
-        portfolio = Portfolio.new(
-            {
-                :file => 'test.gnucash',
-                :investments =>
-                {
-                    "VSP500" => {
-                        :vl => 58.13
-                    }
-                }
-            }
-        )
-        assert_equal(309,portfolio.to_csv.length)
+        portfolio = Portfolio.new('test.gnucash')
+        assert_equal(464,portfolio.to_csv.length)
     end
 
-    def test_xirr
-        portfolio = Portfolio.new(
-            {
-                :file => 'test.gnucash',
-                :investments =>
-                {
-                    "VSP500" => {
-                        :vl => 58.13
-                    }
-                }
-            }
-        )
-        assert_equal(13.49,(portfolio.xirr * 100).round(2))
+    def test_xirr_VSP500
+        portfolio = Portfolio.new('test.gnucash')
+        assert_equal(27.62,(portfolio.portfolio["VSP500"].xirr(Date.strptime("11/06/2024","%d/%m/%Y")) * 100).round(2))
+    end
+
+    def test_xirr_Apple
+        portfolio = Portfolio.new('test.gnucash')
+        assert_equal(23.57,(portfolio.portfolio["Apple"].xirr(Date.strptime("11/06/2024","%d/%m/%Y")) * 100).round(2))
+    end
+
+    def test_profit_VSP500
+        portfolio = Portfolio.new('test.gnucash')
+        assert_equal(313670.59,(portfolio.portfolio["VSP500"].profit(Date.strptime("11/06/2024","%d/%m/%Y"))).round(2))
+    end
+
+    def test_profit_Apple
+        portfolio = Portfolio.new('test.gnucash')
+        assert_equal(1355355.74,(portfolio.portfolio["Apple"].profit(Date.strptime("11/06/2024","%d/%m/%Y"))).round(2))
+    end
+
+    def test_report_txt
+        portfolio = Portfolio.new('test.gnucash')
+        puts portfolio.portfolio["Apple"].report_txt
     end
 end
