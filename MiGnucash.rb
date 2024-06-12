@@ -167,7 +167,9 @@ class Investment
     end
 
     def report_txt(date=Date.today)
-        "#{value(date).round(2)}€ (#{amount(date).round(2)} #{@name} x #{price(date).round(2)}€) #{(xirr(date) * 100).round(2) }% #{profit(date).round(2)}€ #{self.id}"
+        values = []
+        values << value(date).round(2) << amount(date).round(2) << @name << price(date).round(2) << (xirr(date) * 100).round(2) << profit(date).round(2)
+        return '|%10.2f€ | %7.2f %-17s|%7.2f€ |%6.2f^ |%11.2f€ |' % values
     end
 
     def transactions
@@ -221,7 +223,7 @@ class Portfolio
         @portfolio.each do |investment_str,investment|
             result << investment.report_txt(date) << "\n"
         end
-        result << "#{value(date).round(2)} #{(xirr(date) * 100).round(2) }% #{profit(date).round(2)}"
+        result << "|" + "%10.2f" % value(date).round(2) + "€ |                          |         |" + "%6.2f" % (xirr(date) * 100).round(2) + "% |" + "%11.2f" % profit(date).round(2) + "€ |"
         return result
     end
 
