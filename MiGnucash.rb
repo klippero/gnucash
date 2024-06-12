@@ -62,11 +62,39 @@ class Investment
         "Amundi S&P 500 AS&P" =>
         {
             Date.strptime("11/06/2024","%d/%m/%Y") => 428.08,
+            Date.strptime("12/06/2024","%d/%m/%Y") => 430.06,
+        },
+        "Amundi MSCI World" =>
+        {
+            Date.strptime("12/06/2024","%d/%m/%Y") => 316.31,
+        },
+        "Amundi S&P 500 ASP" =>
+        {
+            Date.strptime("11/06/2024","%d/%m/%Y") => 428.08,
+            Date.strptime("12/06/2024","%d/%m/%Y") => 430.06,
+        },
+        "AS&P" =>
+        {
+            Date.strptime("11/06/2024","%d/%m/%Y") => 428.08,
+            Date.strptime("12/06/2024","%d/%m/%Y") => 430.06,
+        },
+        "dbM" =>
+        {
+            Date.strptime("12/06/2024","%d/%m/%Y") => 12.08,
+        },
+        "IUSA" =>
+        {
+            Date.strptime("12/06/2024","%d/%m/%Y") => 54.421694,
+        },
+        "SCO" =>
+        {
+            Date.strptime("12/06/2024","%d/%m/%Y") => 460.1877076,
         },
     }
 
-    def initialize(name)
+    def initialize(name,id)
        @name = name
+       @id = id
        @transactions = []
     end
 
@@ -74,10 +102,12 @@ class Investment
         @transactions << transaction
     end
 
-    def to_csv
+    def to_csv(date=Date.today)
         result = ""
         @transactions.each do |transaction|
-            result += transaction.to_csv(@name) + "\n"
+            if transaction.date <= date
+                result += transaction.to_csv(@name) + "\n"
+            end
         end
         return result
     end
@@ -90,15 +120,20 @@ class Investment
             end
         end
         cf << Transaction.new(amount(date) * price(date),date:date)
-        return cf.xirr.to_f
+
+        if price(date) == 0 && amount(date).round(4) > 0
+            return 0
+        else
+            return cf.xirr.to_f
+        end
     end
 
     def price(date=Date.today)
-#        if Price.haskey?(@name) && Price[@name].haskey?(date)
+        if Price.has_key?(@name) && Price[@name].has_key?(date)
             return Price[@name][date]
-#        else
-#            return 0
-#        end
+        else
+            return 0
+        end
     end
 
     def value(date=Date.today)
@@ -132,11 +167,15 @@ class Investment
     end
 
     def report_txt(date=Date.today)
-        "#{value(date).round(2)}€ (#{amount(date).round(2)} #{@name} x #{price(date).round(2)}€) #{(xirr(date) * 100).round(2) }% #{profit(date).round(2)}€"
+        "#{value(date).round(2)}€ (#{amount(date).round(2)} #{@name} x #{price(date).round(2)}€) #{(xirr(date) * 100).round(2) }% #{profit(date).round(2)}€ #{self.id}"
     end
 
     def transactions
         return @transactions
+    end
+
+    def id
+        return @id
     end
 end
 
@@ -149,7 +188,7 @@ class Portfolio
         book = Gnucash.open(filename)
         book.accounts.each do |account|
             if ["MUTUAL","STOCK"].include?(account.type)
-                @portfolio[account.name] = Investment.new(account.name)
+                @portfolio[account.name] = Investment.new(account.name,account.description)
                 account.transactions.each do |tx|
                     shares = amount = 0
                     tx.splits.each do |split|
@@ -196,10 +235,10 @@ class Portfolio
     end
 
 
-    def to_csv
+    def to_csv(date=Date.today)
         result = "fecha;fondo;#;€;inversión\n"
         @portfolio.each do |investment_str,investment|
-            result += investment.to_csv
+            result += investment.to_csv(date)
         end
         return result
     end
