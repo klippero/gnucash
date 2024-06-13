@@ -90,6 +90,14 @@ class Investment
         {
             Date.strptime("12/06/2024","%d/%m/%Y") => 460.1877076,
         },
+        "ECL_" =>
+        {
+            Date.strptime("12/06/2024","%d/%m/%Y") => 97.676711,
+        },
+        "VA70" =>
+        {
+            Date.strptime("12/06/2024","%d/%m/%Y") => 332130,
+        },
     }
 
     def initialize(name,id)
@@ -196,7 +204,7 @@ class Investment
             last = periodo[1].strftime('%d/%m/%Y')
         end
         values = [ value(date), amount(date), @name, price(date), (xirr(date) * 100), profit(date), first, last,profit_equity(date), profit_dividendos(date) ]
-        return '|%10.2f€ | %7.2f %-18s|%7.2f€ |%6.2f^ |%11.2f€ | %-10s - %-10s |%11.2f€ |%11.2f€ |' % values
+        return '|%10.2f€ | %7.2f %-9s|%10.2f€ |%6.2f^ |%11.2f€ | %-10s - %-10s |%11.2f€ |%11.2f€ |' % values
     end
 
     def transactions
@@ -249,10 +257,16 @@ class Portfolio
         # dividendos
         book.accounts.each do |account|
             if ["EXPENSE","INCOME"].include?(account.type)
-                account.transactions.each do |tx|
-                    investment = contains(tx.description,@portfolio.keys)
-                    if investment != ""
-                        @portfolio[investment] << Transaction_.new(tx.date,-1 * tx.value.to_f)
+                if @portfolio.keys.include?(account.name)
+                    account.transactions.each do |tx|
+                        @portfolio[account.name] << Transaction_.new(tx.date,-1 * tx.value.to_f)
+                    end
+                else
+                    account.transactions.each do |tx|
+                        investment = contains(tx.description,@portfolio.keys)
+                        if investment != ""
+                            @portfolio[investment] << Transaction_.new(tx.date,-1 * tx.value.to_f)
+                        end
                     end
                 end
             end
@@ -260,13 +274,13 @@ class Portfolio
     end
 
     def report_txt(date=Date.today)
-        result = "| %-11s| %-26s| %-8s| %-7s| %-12s| %-24s| %-12s| %-12s|\n" % ["Valor","Participaciones","Precio","Rent%","Profit","Periodo","+equipy","+dividendos"]
+        result = "| %-11s| %-17s| %-11s| %-7s| %-12s| %-24s| %-12s| %-12s|\n" % ["Valor","Participaciones","Precio","Rent%","Profit","Periodo","+equipy","+dividendos"]
         @portfolio.each do |investment_str,investment|
             result << investment.report_txt(date) << "\n"
         end
 
         values = [ value(date), (xirr(date) * 100), profit(date) ]
-        result << '|%10.2f€ |                           |         |%6.2f^ |%11.2f€ |' % values
+        result << '|%10.2f€ |                  |            |%6.2f^ |%11.2f€ |' % values
         return result
     end
 
