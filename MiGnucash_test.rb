@@ -32,7 +32,7 @@ class TransactionTest < Minitest::Test
 
     def test_csv
         portfolio = Portfolio.new('test.gnucash')
-        assert_equal(464,portfolio.to_csv.length)
+        assert_equal(591,portfolio.to_csv.length)
     end
 
     def test_xirr_VSP500
@@ -56,16 +56,21 @@ class TransactionTest < Minitest::Test
     end
 
     def test_report_txt
-#        portfolio = Portfolio.new('test.gnucash')
-#        puts portfolio.report_txt(Date.strptime("11/06/2024","%d/%m/%Y"))
+        portfolio = Portfolio.new('test.gnucash')
+        puts
+        puts
+        puts portfolio.to_csv(Date.strptime("11/06/2024","%d/%m/%Y"))
+        puts
+        puts
+        puts portfolio.report_txt(Date.strptime("11/06/2024","%d/%m/%Y"))
 
 #        portfolio = Portfolio.new("/Users/santiagoalvarezrojo/Library/CloudStorage/GoogleDrive-santiago@ecliente.com/Mi\ unidad/gnucash/family.gnucash")
 #        puts portfolio.report_txt(Date.strptime("12/06/2024","%d/%m/%Y"))
 
-        portfolio = Portfolio.new("/Users/santiagoalvarezrojo/Library/CloudStorage/GoogleDrive-santiago@ecliente.com/Mi\ unidad/gnucash/personal.gnucash")
-        puts
-        puts
-        puts portfolio.report_txt(Date.strptime("12/06/2024","%d/%m/%Y"))
+#        portfolio = Portfolio.new("/Users/santiagoalvarezrojo/Library/CloudStorage/GoogleDrive-santiago@ecliente.com/Mi\ unidad/gnucash/personal.gnucash")
+#        puts
+#        puts
+#        puts portfolio.report_txt(Date.strptime("12/06/2024","%d/%m/%Y"))
 #        puts portfolio.to_csv(Date.strptime("12/06/2024","%d/%m/%Y"))
     end
 end

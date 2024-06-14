@@ -1,6 +1,6 @@
 require("bundler/setup")
 require "xirr"
-require "active_support/all" # for `in_groups_of`
+require "active_support/all"
 
 class Transaction_
     def initialize(date,amount,*shares)
@@ -52,6 +52,10 @@ class Investment
         "Apple" =>
         {
             Date.strptime("11/06/2024","%d/%m/%Y") => 202.73,
+        },
+        "EF57" =>
+        {
+            Date.strptime("11/06/2024","%d/%m/%Y") => 440000,
         },
         "VSP500" =>
         {
@@ -202,7 +206,7 @@ class Investment
             last = periodo[1].strftime('%d/%m/%Y')
         end
         values = [ value(date), amount(date), @name, price(date), (xirr(date) * 100), profit(date), first, last,profit_equity(date), profit_dividendos(date) ]
-        return '|%10.2f€ | %7.2f %-9s|%10.2f€ |%6.2f^ |%11.2f€ | %-10s - %-10s |%11.2f€ |%11.2f€ |' % values
+        return '|%10.2f€ | %7.2f %-9s|%10.2f€ |%6.2f%% |%11.2f€ | %-10s - %-10s |%11.2f€ |%11.2f€ |' % values
     end
 
     def transactions
@@ -255,9 +259,10 @@ class Portfolio
         # dividendos
         book.accounts.each do |account|
             if ["EXPENSE","INCOME"].include?(account.type)
-                if @portfolio.keys.include?(account.name)
+                investment = contains(account.name,@portfolio.keys)
+                if investment != ""
                     account.transactions.each do |tx|
-                        @portfolio[account.name] << Transaction_.new(tx.date,-1 * tx.value.to_f)
+                        @portfolio[investment] << Transaction_.new(tx.date,-1 * tx.value.to_f)
                     end
                 else
                     account.transactions.each do |tx|
@@ -272,13 +277,13 @@ class Portfolio
     end
 
     def report_txt(date=Date.today)
-        result = "| %-11s| %-17s| %-11s| %-7s| %-12s| %-24s| %-12s| %-12s|\n" % ["Valor","Participaciones","Precio","Rent%","Profit","Periodo","+equipy","+dividendos"]
+        result = "| %-11s| %-17s| %-11s| %-7s| %-12s| %-24s| %-12s| %-12s|\n" % ["Investment","Shares","Price","%","Profit","Period","+equipy","+others"]
         @portfolio.each do |investment_str,investment|
             result << investment.report_txt(date) << "\n"
         end
 
         values = [ value(date), (xirr(date) * 100), profit(date) ]
-        result << '|%10.2f€ |                  |            |%6.2f^ |%11.2f€ |' % values
+        result << '|%10.2f€ |                  |            |%6.2f%% |%11.2f€ |' % values
         return result
     end
 
@@ -293,7 +298,7 @@ class Portfolio
 
 
     def to_csv(date=Date.today)
-        result = "fecha;fondo;#;€;inversión\n"
+        result = "date;investment;shares;price;amount\n"
         @portfolio.each do |investment_str,investment|
             result += investment.to_csv(date)
         end
