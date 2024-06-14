@@ -56,7 +56,8 @@ class TransactionTest < Minitest::Test
     end
 
     def test_report_txt
-        portfolio = Portfolio.new('test.gnucash')
+#        portfolio = Portfolio.new('test.gnucash')
+        portfolio = Portfolio.new("/Users/santiagoalvarezrojo/Library/CloudStorage/GoogleDrive-santiago@ecliente.com/Mi\ unidad/gnucash/family.gnucash")
         puts
         puts
         puts portfolio.to_csv(Date.strptime("11/06/2024","%d/%m/%Y"))
