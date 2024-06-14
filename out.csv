@@ -1,8 +1,8 @@
-Run options: --seed 47612
+Run options: --seed 46580
 
 # Running:
 
-..
+....
 
 fecha;fondo;#;€;inversión
 23/06/2021;AS&P;14,088;283,87989778534927;-3999,3
@@ -377,8 +377,8 @@ fecha;fondo;#;€;inversión
 07/12/2011;VA70;;;-19,53
 14/12/2011;VA70;;;-180,37
 05/06/2024;VA70;;;-484,0
-........
+......
 
-Finished in 7.209550s, 1.3870 runs/s, 1.6645 assertions/s.
+Finished in 7.600965s, 1.3156 runs/s, 1.5787 assertions/s.
 
 10 runs, 12 assertions, 0 failures, 0 errors, 0 skips

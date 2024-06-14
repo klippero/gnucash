@@ -48,8 +48,6 @@ end
 
 
 class Investment
-    include Xirr # bring `Xirr` module in scope
-
     Price = {
         "Apple" =>
         {
@@ -121,13 +119,13 @@ class Investment
     end
 
     def xirr(date=Date.today)
-        cf = Cashflow.new
+        cf = Xirr::Cashflow.new
         @transactions.each do |transaction|
             if transaction.date <= date
                 cf << transaction.to_xirrTransaction
             end
         end
-        cf << Transaction.new(amount(date) * price(date),date:date)
+        cf << Xirr::Transaction.new(amount(date) * price(date),date:date)
 
         if price(date) == 0 && amount(date).round(4) > 0
             return 0
