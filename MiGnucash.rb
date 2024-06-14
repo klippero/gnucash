@@ -82,23 +82,32 @@ class Investment
         },
         "dbM" =>
         {
+            Date.strptime("11/06/2024","%d/%m/%Y") => 12.08,
             Date.strptime("12/06/2024","%d/%m/%Y") => 12.08,
         },
         "IUSA" =>
         {
+            Date.strptime("11/06/2024","%d/%m/%Y") => 54.421694,
             Date.strptime("12/06/2024","%d/%m/%Y") => 54.421694,
         },
         "SCO" =>
         {
+            Date.strptime("11/06/2024","%d/%m/%Y") => 54.421694,
             Date.strptime("12/06/2024","%d/%m/%Y") => 460.1877076,
         },
         "ECL_" =>
         {
+            Date.strptime("11/06/2024","%d/%m/%Y") => 97.676711,
             Date.strptime("12/06/2024","%d/%m/%Y") => 97.676711,
         },
         "VA70" =>
         {
+            Date.strptime("11/06/2024","%d/%m/%Y") => 332130,
             Date.strptime("12/06/2024","%d/%m/%Y") => 332130,
+        },
+        "MSCI" =>
+        {
+            Date.strptime("11/06/2024","%d/%m/%Y") => 317.15,
         },
     }
 
@@ -316,7 +325,11 @@ class Portfolio
             end
             cf << Xirr::Transaction.new(investment.amount(date) * investment.price(date),date:date)
         end
-        return cf.xirr.to_f
+        if value(date).round(4) == 0
+            return 0
+        else
+            return cf.xirr.to_f
+        end
     end
 
 

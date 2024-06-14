@@ -57,7 +57,8 @@ class TransactionTest < Minitest::Test
 
     def test_report_txt
 #        portfolio = Portfolio.new('test.gnucash')
-        portfolio = Portfolio.new("/Users/santiagoalvarezrojo/Library/CloudStorage/GoogleDrive-santiago@ecliente.com/Mi\ unidad/gnucash/family.gnucash")
+        portfolio = Portfolio.new("/Users/santiagoalvarezrojo/Library/CloudStorage/GoogleDrive-santiago@ecliente.com/Mi\ unidad/gnucash/personal.gnucash")
+#        portfolio = Portfolio.new("/Users/santiagoalvarezrojo/Library/CloudStorage/GoogleDrive-santiago@ecliente.com/Mi\ unidad/gnucash/family.gnucash")
         puts
         puts
         puts portfolio.to_csv(Date.strptime("11/06/2024","%d/%m/%Y"))
@@ -68,7 +69,6 @@ class TransactionTest < Minitest::Test
 #        portfolio = Portfolio.new("/Users/santiagoalvarezrojo/Library/CloudStorage/GoogleDrive-santiago@ecliente.com/Mi\ unidad/gnucash/family.gnucash")
 #        puts portfolio.report_txt(Date.strptime("12/06/2024","%d/%m/%Y"))
 
-#        portfolio = Portfolio.new("/Users/santiagoalvarezrojo/Library/CloudStorage/GoogleDrive-santiago@ecliente.com/Mi\ unidad/gnucash/personal.gnucash")
 #        puts
 #        puts
 #        puts portfolio.report_txt(Date.strptime("12/06/2024","%d/%m/%Y"))
