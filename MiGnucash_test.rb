@@ -61,10 +61,11 @@ class TransactionTest < Minitest::Test
 #        portfolio = Portfolio.new("/Users/santiagoalvarezrojo/Library/CloudStorage/GoogleDrive-santiago@ecliente.com/Mi\ unidad/gnucash/family.gnucash")
         puts
         puts
-        puts portfolio.to_csv(Date.strptime("11/06/2024","%d/%m/%Y"))
+#        puts portfolio.to_csv(Date.strptime("11/06/2024","%d/%m/%Y"))
         puts
         puts
-        puts portfolio.report_txt(Date.strptime("11/06/2024","%d/%m/%Y"))
+#        puts portfolio.report_txt(Date.strptime("11/06/2024","%d/%m/%Y"))
+        puts portfolio.report("| %-11s| %-17s| %-11s| %-24s| %-7s| %-12s| %-12s| %-12s|",'|%10.2f€ | %7.2f %-9s|%10.2f€ | %-10s - %-10s |%6.2f%% |%11.2f€ |%11.2f€ |%11.2f€ |',Date.strptime("11/06/2024","%d/%m/%Y"))
 
 #        portfolio = Portfolio.new("/Users/santiagoalvarezrojo/Library/CloudStorage/GoogleDrive-santiago@ecliente.com/Mi\ unidad/gnucash/family.gnucash")
 #        puts portfolio.report_txt(Date.strptime("12/06/2024","%d/%m/%Y"))

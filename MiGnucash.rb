@@ -218,6 +218,19 @@ class Investment
         return '|%10.2f€ | %7.2f %-9s|%10.2f€ |%6.2f%% |%11.2f€ | %-10s - %-10s |%11.2f€ |%11.2f€ |' % values
     end
 
+    def report(tmpl,date=Date.today)
+        # el orden siempre es el mismo
+        periodo = self.period
+        first = periodo[0].strftime('%d/%m/%Y')
+        if amount(date).round(2) > 0
+            last = date.strftime('%d/%m/%Y')
+        else
+            last = periodo[1].strftime('%d/%m/%Y')
+        end
+        values = [ value(date), amount(date), @name, price(date), first, last, (xirr(date) * 100), profit(date),profit_equity(date), profit_dividendos(date) ]
+        return tmpl % values
+    end
+
     def transactions
         return @transactions
     end
@@ -293,6 +306,18 @@ class Portfolio
 
         values = [ value(date), (xirr(date) * 100), profit(date) ]
         result << '|%10.2f€ |                  |            |%6.2f%% |%11.2f€ |' % values
+        return result
+    end
+
+    def report(tmplHeader,tmpl,date=Date.today)
+        result = tmplHeader % ["Investment","Shares","Price","Period","%","Profit","+equipy","+others"]
+        result += "\n"
+        @portfolio.each do |investment_str,investment|
+            result << investment.report(tmpl,date) << "\n"
+        end
+
+        values = [ value(date), (xirr(date) * 100), profit(date) ]
+        result << '|%10.2f€ |                  |            |                         |%6.2f%% |%11.2f€ |' % values
         return result
     end
 
