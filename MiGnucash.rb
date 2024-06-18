@@ -44,6 +44,14 @@ class Transaction_
     def date
         return @date
     end
+
+    def compra?
+        return @amount < 0
+    end
+
+    def venta?
+        return @amount > 0
+    end
 end
 
 
@@ -185,6 +193,26 @@ class Investment
         return result
     end
 
+    def compras(date=Date.today)
+        result = 0
+        @transactions.each do |transaction|
+            if transaction.date <= date && transaction.compra?
+                result += transaction.amount
+            end
+        end
+        return result
+    end
+
+    def ventas(date=Date.today)
+        result = 0
+        @transactions.each do |transaction|
+            if transaction.date <= date && transaction.venta?
+                result += transaction.amount
+            end
+        end
+        return result
+    end
+
     def profit_equity(date=Date.today)
         result = 0
         @transactions.each do |transaction|
@@ -227,7 +255,7 @@ class Investment
         else
             last = periodo[1].strftime('%d/%m/%Y')
         end
-        values = [ value(date), amount(date), @name, price(date), first, last, (xirr(date) * 100), profit(date),profit_equity(date), profit_dividendos(date) ]
+        values = [ value(date), amount(date), @name, price(date), first, last, (xirr(date) * 100), profit(date),profit_equity(date), profit_dividendos(date), aportaciones_netas(date), compras(date), ventas(date) ]
         return tmpl % values
     end
 
@@ -310,14 +338,14 @@ class Portfolio
     end
 
     def report(tmplHeader,tmpl,date=Date.today)
-        result = tmplHeader % ["Investment","Shares","Price","Period","%","Profit","+equipy","+others"]
+        result = tmplHeader % ["Investment","Shares","Price","Period","%","Profit","+equipy","+others","=","+","-"]
         result += "\n"
         @portfolio.each do |investment_str,investment|
             result << investment.report(tmpl,date) << "\n"
         end
 
-        values = [ value(date), (xirr(date) * 100), profit(date) ]
-        result << '|%10.2f€ |                  |            |                         |%6.2f%% |%11.2f€ |' % values
+        values = [ value(date), (xirr(date) * 100), profit(date),profit_equity(date),profit_dividendos(date),aportaciones_netas(date),compras(date),ventas(date) ]
+        result << '|%10.2f€ |                  |            |                         |%6.2f%% |%11.2f€ |%11.2f€ |%11.2f€ |%11.2f€ |%11.2f€ |%11.2f€ |' % values
         return result
     end
 
@@ -392,6 +420,46 @@ class Portfolio
         result = 0
         @portfolio.each do |investment_str,investment|
             result += investment.profit(date)
+        end
+        return result
+    end
+
+    def aportaciones_netas(date=Date.today)
+        result = 0
+        @portfolio.each do |investment_str,investment|
+            result += investment.aportaciones_netas(date)
+        end
+        return result
+    end
+
+    def compras(date=Date.today)
+        result = 0
+        @portfolio.each do |investment_str,investment|
+            result += investment.compras(date)
+        end
+        return result
+    end
+
+    def ventas(date=Date.today)
+        result = 0
+        @portfolio.each do |investment_str,investment|
+            result += investment.ventas(date)
+        end
+        return result
+    end
+
+    def profit_equity(date=Date.today)
+        result = 0
+        @portfolio.each do |investment_str,investment|
+            result += investment.profit_equity(date)
+        end
+        return result
+    end
+
+    def profit_dividendos(date=Date.today)
+        result = 0
+        @portfolio.each do |investment_str,investment|
+            result += investment.profit_dividendos(date)
         end
         return result
     end
