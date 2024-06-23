@@ -146,7 +146,10 @@ class Investment
                 cf << transaction.to_xirrTransaction
             end
         end
-        cf << Xirr::Transaction.new(amount(date) * price(date),date:date)
+
+        if amount(date) > 0
+            cf << Xirr::Transaction.new(amount(date) * price(date),date:date)
+        end
 
         if price(date) == 0 && amount(date).round(4) > 0
             return 0

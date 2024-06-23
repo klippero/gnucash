@@ -55,6 +55,11 @@ class TransactionTest < Minitest::Test
         assert_equal(1355355.74,(portfolio.portfolio["Apple"].profit(Date.strptime("11/06/2024","%d/%m/%Y"))).round(2))
     end
 
+    def test_xirr_indexa
+        portfolio = Portfolio.new("test.gnucash")
+        assert_equal(-73.90,(portfolio.portfolio["indexa"].xirr(Date.strptime("11/06/2024","%d/%m/%Y")) * 100).round(2))
+    end
+
     def test_report_txt
 #        portfolio = Portfolio.new('test.gnucash')
         portfolio = Portfolio.new("/Users/santiagoalvarezrojo/Library/CloudStorage/GoogleDrive-santiago@ecliente.com/Mi\ unidad/gnucash/personal.gnucash")
