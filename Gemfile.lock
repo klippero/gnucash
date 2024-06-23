@@ -45,13 +45,11 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  activesupport
   date
   gnucash
   minitest
   xirr (= 0.7.1)!
-
-RUBY VERSION
-   ruby 3.1.0p0
 
 BUNDLED WITH
    2.5.5
