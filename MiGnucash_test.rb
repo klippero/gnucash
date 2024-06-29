@@ -61,8 +61,8 @@ class TransactionTest < Minitest::Test
     end
 
     def test_report_txt
-#        portfolio = Portfolio.new('test.gnucash')
-        portfolio = Portfolio.new("/Users/santiagoalvarezrojo/Library/CloudStorage/GoogleDrive-santiago@ecliente.com/Mi\ unidad/gnucash/personal.gnucash")
+        portfolio = Portfolio.new('test.gnucash')
+#        portfolio = Portfolio.new("/Users/santiagoalvarezrojo/Library/CloudStorage/GoogleDrive-santiago@ecliente.com/Mi\ unidad/gnucash/personal.gnucash")
 #        portfolio = Portfolio.new("/Users/santiagoalvarezrojo/Library/CloudStorage/GoogleDrive-santiago@ecliente.com/Mi\ unidad/gnucash/family.gnucash")
         puts
         puts
